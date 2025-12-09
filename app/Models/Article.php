@@ -26,4 +26,10 @@ class Article extends Model
     {
         return $this->belongsTo(Source::class);
     }
+
+    public function bookmarks() : BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'book_marks', 'article_id', 'user_id');
+    }
+    
 }

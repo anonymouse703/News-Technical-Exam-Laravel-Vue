@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { login } from '@/routes'
 import { Bookmark } from 'lucide-vue-next'
 import noImage from '../../../assets/no-image.png'
-import { usePage, Link } from '@inertiajs/vue3'
+import { router, usePage, Link } from '@inertiajs/vue3'
 
 type Article = {
     id: number
@@ -27,27 +27,45 @@ const showLoginModal = ref(false)
 const page = usePage()
 
 const toggleBookmark = () => {
-
-     if (!page.props.auth.user) {
-        // User not authenticated, show modal
+    if (!page.props.auth.user) {
         showLoginModal.value = true
         return
     }
-    isBookmarked.value = !isBookmarked.value
-    // TODO: call API to save bookmark
+
+    router.post(`/bookmark/${props.article.id}`,
+        { article_id: props.article.id },
+        {
+            preserveScroll: true,
+            onError: (error) => {
+                console.error('Bookmark error:', error)
+                isBookmarked.value = !isBookmarked.value
+            },
+            onSuccess: () => {
+                isBookmarked.value = !isBookmarked.value
+            }
+        }
+    )
 }
 
 function getImage() {
     return props.article.image_url?.trim() || noImage
 }
+
+function handleImageError(event: Event) {
+    const img = event.target as HTMLImageElement
+    img.src = noImage
+}
 </script>
+
 
 <template>
     <div
         class="rounded-lg border border-gray-200 dark:border-gray-700 shadow-md overflow-hidden flex flex-col h-[450px] w-[300px]">
 
-        <img :src="getImage()" @error="($event.target as HTMLImageElement).src = noImage"
-            class="w-full h-40 object-cover" />
+        <!-- <img :src="getImage()" @error="($event.target as HTMLImageElement).src = noImage"
+            class="w-full h-40 object-cover" /> -->
+        <img :src="getImage()" @error="handleImageError" class="w-full h-40 object-cover" />
+
 
         <div class="p-4 flex flex-col flex-1">
             <h3 class="font-bold text-md mb-2 line-clamp-2">
@@ -78,7 +96,7 @@ function getImage() {
         </div>
 
         <!-- Login Modal -->
-        <div v-if="showLoginModal" class="fixed inset-0 bg-gray-500/30 bg-opacity-50 flex items-center justify-center z-50">
+        <div v-if="showLoginModal" class="fixed inset-0 bg-gray-500/30 flex items-center justify-center z-50">
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-sm w-full text-center">
                 <h2 class="text-lg font-bold mb-4">Login Required</h2>
                 <p class="mb-4">You need to be logged in to bookmark articles.</p>
@@ -88,7 +106,7 @@ function getImage() {
                         Cancel
                     </button>
                     <Link :href="login()"
-                            class="px-4 py-2 rounded-sm text-sm bg-teal-900 text-white hover:text-gray-300">
+                        class="px-4 py-2 rounded-sm text-sm bg-teal-900 text-white hover:text-gray-300">
                         Log in
                     </Link>
                 </div>

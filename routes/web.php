@@ -5,6 +5,7 @@ use App\Models\Article;
 use Laravel\Fortify\Features;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Public\ArticleController;
+use App\Http\Controllers\Public\BookMarkController;
 
 Route::get('/', function () {
 
@@ -15,6 +16,11 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/bookmark/{article}', [BookMarkController::class, 'toggle'])->name('bookmark.toggle');
+    Route::get('/bookmarks', [BookMarkController::class, 'index'])->name('bookmarks.index');
+});
 
 
 Route::get('dashboard', function () {

@@ -3,15 +3,14 @@ import { computed } from 'vue'
 import { Head, usePage } from '@inertiajs/vue3'
 import type { PageProps as InertiaPageProps } from '@inertiajs/core'
 import PublicHeader from '@/components/shared/PublicHeader.vue'
-import BookmarkArticleCard from '@/components/shared/ArticleCard.vue'
+import BookmarkArticleCard from '@/components/shared/BookMarkArticleCard.vue'
 import Sidebar from '@/components/shared/Sidebar.vue'
 
 const props = defineProps({
-  articles: Object,
+  bookmarks: Object,
 })
 
-const articlesData = computed(() => props.articles?.data ?? [])
-console.log(articlesData.value)
+const articlesData = computed(() => props.bookmarks?.data ?? [])
 
 interface Filters {
   search: string
@@ -33,37 +32,25 @@ const filters = computed(() => ({
 </script>
 
 <template>
+
   <Head title="Articles" />
 
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <PublicHeader :canRegister="true" />
 
     <div class="flex">
-      <Sidebar
-        :start-date="filters.start_date"
-        :end-date="filters.end_date"
-        :search="filters.search"
-      />
+      <Sidebar :start-date="filters.start_date" :end-date="filters.end_date" :search="filters.search" />
 
       <div class="flex-1 p-6">
         <h2 class="text-xl text-center mt-3 font-semibold mb-4">
-          Latest Articles
+          Bookmarked Articles
         </h2>
 
         <div class="flex flex-wrap justify-center gap-6 mt-10">
-          <BookmarkArticleCard
-            v-for="article in articlesData"
-            console.log(articlesData.value)
-            :key="article.id"
-            :article="article"
-            cardClass="w-[250px] shrink-0"
-            imageHeight="h-40"
-          />
+          <BookmarkArticleCard v-for="bookmark in articlesData" :key="bookmark.id" :article="bookmark.article"
+            cardClass="w-[250px] shrink-0" imageHeight="h-40" />
         </div>
       </div>
     </div>
   </div>
 </template>
-
-
-

@@ -35,11 +35,11 @@ class ArticleRepository extends BaseRepository implements ArticleRepositoryInter
         return $this->filter(function (Builder $builder) use ($startDate, $endDate) {
 
             if (!empty($startDate)) {
-                $builder->where('created_at', '>=', $startDate);
+                $builder->where('published_at', '>=', $startDate);
             }
 
             if (!empty($endDate)) {
-                $builder->where('created_at', '<=', $endDate);
+                $builder->where('published_at', '<=', $endDate);
             }
         });
     }

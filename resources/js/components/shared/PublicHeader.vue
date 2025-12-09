@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, router, usePage } from '@inertiajs/vue3'
-import { dashboard, login, register } from '@/routes'
+import { login, logout, register } from '@/routes'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
@@ -10,8 +10,6 @@ const props = defineProps({
   },
 })
 
-const canRegister = props.canRegister ?? true
-
 const page = usePage()
 
 const showSearch = computed(() => page.component !== 'Welcome')
@@ -19,7 +17,15 @@ const showSearch = computed(() => page.component !== 'Welcome')
 const searchQuery = ref('')
 
 const submitSearch = () => {
-  router.get('/articles', { search: searchQuery.value })
+  const component = page.component 
+
+  const base = component.split('/')[0].toLowerCase()
+
+  const validRoutes = ['articles', 'bookmarks']
+
+  const targetRoute = validRoutes.includes(base) ? `/${base}` : '/articles'
+
+  router.get(targetRoute, { search: searchQuery.value })
 }
 </script>
 
@@ -47,10 +53,10 @@ const submitSearch = () => {
     <nav class="flex items-center gap-4">
       <Link
         v-if="$page.props.auth.user"
-        :href="dashboard()"
+        :href="logout()"
         class="rounded-sm border px-4 py-1 text-sm hover:border-gray-400 dark:hover:border-gray-600"
       >
-        Dashboard
+        Logout
       </Link>
 
       <template v-else>
@@ -62,7 +68,7 @@ const submitSearch = () => {
         </Link>
 
         <Link
-          v-if="canRegister"
+          v-if="props.canRegister"
           :href="register()"
           class="rounded-sm border px-4 py-1 text-sm hover:border-gray-400 dark:hover:border-gray-600"
         >

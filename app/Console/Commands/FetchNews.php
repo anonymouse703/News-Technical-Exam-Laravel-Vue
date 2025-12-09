@@ -26,14 +26,14 @@ class FetchNews extends Command
 
         $startDate = text(
             label: "Start date (YYYY-MM-DD) — blank = {$defaultStart}:",
-            validate: fn($value) => $value === '' ? null : $this->validateDate($value)
+            validate: fn($value) => $value === '' ? null : validateDate($value)
         );
         $startDate = $startDate === '' ? $defaultStart : $startDate;
 
         $endDate = text(
             label: "End date (YYYY-MM-DD) — blank = {$defaultEnd}:",
             validate: fn($value) => $value === '' ? null : (
-                ($error = $this->validateDate($value)) ? $error : (
+                ($error = validateDate($value)) ? $error : (
                     strtotime($value) < strtotime($startDate) ? 'End date must not be earlier than start date.' : null
                 )
             )
