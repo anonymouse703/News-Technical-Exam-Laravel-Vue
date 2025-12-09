@@ -36,8 +36,6 @@ class ArticleController extends Controller
             ->orderBy('published_at', 'desc')
             ->paginate(12);
 
-        dd( $articles );
-
         return Inertia::render('articles/Index', [
             'articles' => ArticleResource::collection($articles)
         ]);
