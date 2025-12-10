@@ -9,7 +9,7 @@ import Sidebar from '@/components/shared/Sidebar.vue'
 import Pagination from '@/components/shared/Pagination.vue'
 
 const props = defineProps({
-  articles: Object, // Laravel LengthAwarePaginator wrapped in a resource collection
+  articles: Object, 
 })
 
 const articlesData = computed(() => props.articles?.data ?? [])
@@ -52,8 +52,6 @@ const paginationLinks = computed(() => props.articles?.meta ?? null)
         <h2 class="text-xl text-center mt-3 font-semibold mb-4">
           Latest Articles
         </h2>
-
-        <Pagination v-if="paginationLinks" :meta="paginationLinks" :query="filters" />
 
         <div class="flex flex-wrap justify-center gap-6 mt-6">
           <BookmarkArticleCard

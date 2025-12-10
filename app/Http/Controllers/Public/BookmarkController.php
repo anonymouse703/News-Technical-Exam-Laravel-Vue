@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Public;
 
 use Inertia\Inertia;
+use App\Models\Article;
 use App\Models\Bookmark;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\In;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Bookmark\StoreRequest;
+use App\Http\Resources\Bookmark\BookmarkResource;
+use App\Http\Resources\Public\ArticleResource;
+use Carbon\Carbon;
 
 class BookmarkController extends Controller
 {   
@@ -16,14 +20,29 @@ class BookmarkController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        $search = $request->input('search');
+        $startDate = $request->input('start_date');
+        $endDate   = $request->input('end_date');
+
+        if ($startDate) {
+            $startDate = Carbon::parse($startDate)->startOfDay(); 
+        }
+
+        if ($endDate) {
+            $endDate = Carbon::parse($endDate)->endOfDay(); 
+        }
+
 
         $bookmarks = $this->bookmarkRepository
             ->filterByUserId($user->id)
+            ->filterByKeyword($search)
+            ->filterByDate($startDate, $endDate)
             ->with(['article'])
-            ->paginate(12);
-        
+            ->paginate(12)
+            ->withQueryString();
+            
         return Inertia::render('bookmarks/Index', [
-            'bookmarks' => $bookmarks,
+            'bookmarks' => BookmarkResource::collection($bookmarks),
         ]);
     }
 
@@ -46,19 +65,5 @@ class BookmarkController extends Controller
 
             $this->bookmarkRepository->save($bookmark);
         }
-    }
-
-    public function bookmarks(Request $request)
-    {
-        $user = $request->user();
-
-        $bookmarks = $this->bookmarkRepository
-            ->filterByUserId($user->id)
-            ->with(['article'])
-            ->paginate(10);
-        
-        return Inertia::render('bookmarks/Index', [
-            'bookmarks' => $bookmarks,
-        ]);
     }
 }

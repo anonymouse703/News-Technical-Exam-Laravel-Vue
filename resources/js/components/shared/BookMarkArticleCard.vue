@@ -12,13 +12,13 @@ type Article = {
 }
 
 const props = defineProps<{
-    article: Article
+    article: Article | null
     cardClass?: string
     imageHeight?: string
 }>()
 
 function getImage() {
-    return props.article.image_url?.trim() || noImage
+    return props.article?.image_url?.trim() || noImage
 }
 
 function handleImageError(event: Event) {
@@ -27,16 +27,19 @@ function handleImageError(event: Event) {
 }
 </script>
 
-
 <template>
     <div
-        class="rounded-lg border border-gray-200 dark:border-gray-700 shadow-md overflow-hidden flex flex-col h-[450px] w-[300px]">
+        v-if="article"
+        class="rounded-lg border border-gray-200 dark:border-gray-700 shadow-md overflow-hidden flex flex-col h-[450px] w-[300px]"
+    >
+        <!-- IMAGE -->
+        <img
+            :src="getImage()"
+            @error="handleImageError"
+            class="w-full h-40 object-cover"
+        />
 
-        <!-- <img :src="getImage()" @error="($event.target as HTMLImageElement).src = noImage"
-            class="w-full h-40 object-cover" /> -->
-        <img :src="getImage()" @error="handleImageError" class="w-full h-40 object-cover" />
-
-
+        <!-- CONTENT -->
         <div class="p-4 flex flex-col flex-1">
             <h3 class="font-bold text-md mb-2 line-clamp-2">
                 <a :href="article.url" target="_blank" class="hover:text-blue-600">

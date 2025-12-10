@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 import { Bookmark, Newspaper } from 'lucide-vue-next'
 
@@ -19,12 +19,20 @@ const startDate = ref(props.startDate ?? '')
 const endDate = ref(props.endDate ?? '')
 
 const applyFilters = () => {
-  router.get('/articles', {
+  // Determine which route to use
+  const route = isBookmarksPage ? '/bookmarks' : '/articles'
+  
+  router.get(route, {
     search: props.search,
     start_date: startDate.value,
     end_date: endDate.value,
   })
 }
+
+// You can also add a computed property for the button text if you want
+const applyButtonText = computed(() => {
+  return `Apply Filters to ${isBookmarksPage ? 'Bookmarks' : 'Articles'}`
+})
 
 const goToBookmarks = () => router.get('/bookmarks')
 const goToArticles = () => router.get('/articles')
@@ -72,7 +80,7 @@ const goToArticles = () => router.get('/articles')
         @click="applyFilters"
         class="mt-3 w-full bg-teal-700 text-white py-2 rounded-lg hover:bg-teal-800"
       >
-        Apply Filters
+        {{ applyButtonText }}
       </button>
     </div>
   </aside>

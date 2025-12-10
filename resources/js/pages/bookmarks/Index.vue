@@ -2,15 +2,17 @@
 import { computed } from 'vue'
 import { Head, usePage } from '@inertiajs/vue3'
 import type { PageProps as InertiaPageProps } from '@inertiajs/core'
+
 import PublicHeader from '@/components/shared/PublicHeader.vue'
 import BookmarkArticleCard from '@/components/shared/BookMarkArticleCard.vue'
 import Sidebar from '@/components/shared/Sidebar.vue'
+import Pagination from '@/components/shared/Pagination.vue'
 
 const props = defineProps({
   bookmarks: Object,
 })
 
-const articlesData = computed(() => props.bookmarks?.data ?? [])
+const bookmarksData = computed(() => props.bookmarks?.data ?? [])
 
 interface Filters {
   search: string
@@ -29,6 +31,8 @@ const filters = computed(() => ({
   start_date: page.props.filters?.start_date ?? '',
   end_date: page.props.filters?.end_date ?? ''
 }))
+
+const paginationLinks = computed(() => props.bookmarks?.meta ?? null)
 </script>
 
 <template>
@@ -39,7 +43,11 @@ const filters = computed(() => ({
     <PublicHeader :canRegister="true" />
 
     <div class="flex">
-      <Sidebar :start-date="filters.start_date" :end-date="filters.end_date" :search="filters.search" />
+      <Sidebar
+        :start-date="filters.start_date"
+        :end-date="filters.end_date"
+        :search="filters.search"
+      />
 
       <div class="flex-1 p-6">
         <h2 class="text-xl text-center mt-3 font-semibold mb-4">
@@ -47,9 +55,21 @@ const filters = computed(() => ({
         </h2>
 
         <div class="flex flex-wrap justify-center gap-6 mt-10">
-          <BookmarkArticleCard v-for="bookmark in articlesData" :key="bookmark.id" :article="bookmark.article"
-            cardClass="w-[250px] shrink-0" imageHeight="h-40" />
+          <BookmarkArticleCard
+            v-for="bookmark in bookmarksData"
+            :key="bookmark.id"
+            :article="bookmark.article || null"
+            cardClass="w-[250px] shrink-0"
+            imageHeight="h-40"
+          />
         </div>
+
+        <Pagination
+          v-if="paginationLinks"
+          class="mt-6"
+          :meta="paginationLinks"
+          :query="filters"
+        />
       </div>
     </div>
   </div>
